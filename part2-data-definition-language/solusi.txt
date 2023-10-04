@@ -1,34 +1,152 @@
 1) Create database alta_online_shop.
-Sulisi SQL:
+Sulisi SQL: 
+
+    Buka pgAdmin4 - pilih bagian database - klik kanan - create - ketikan alta_shop_online - save - query tool
 
 2) Dari schema Olshop yang telah kamu kerjakan di, Implementasikanlah menjadi table pada MySQL.
     2.a Create table user
     Sulisi SQL:
 
+    create table user_pelanggan (
+        id serial,
+        nama text,
+        alamat text,
+        email text unique,
+        primary key(id)
+    );
+
+
     2.b Create table product, product_type, product_description, payment_method.
     Sulisi SQL:
+
+    create table product (
+        id serial, 
+        nama text not null,
+        harga int,
+        sku text unique,
+        stok int,
+	    primary key(id)
+    );
+
+    create table product_type (
+        id serial,
+        elektronik text,
+        pecah_belah text,
+        fashion text
+    );
+
+    create table product_description (
+        id serial,
+        deskripsi text,
+        spesifikasi text,
+        id_product int,
+        primary key(id),
+        foreign key(id_product) references product(id)
+    );
+
 
     3.c Create table transaction, transaction detail.
     Sulisi SQL:
 
+    create table payment_method (
+        id serial,
+        virtual_account int,
+        Bank int,
+        ovo int,
+        gopay int,
+        primary key(id)
+    );
+
+    create table transaction (
+        id serial,
+        id_user_pelanggan int,
+        id_product int,
+        id_payment_method int,
+        jumlah int not null,
+        tanggal timestamptz,
+        primary key(id),
+        foreign key(id_user_pelanggan) references user_pelanggan(id),
+        foreign key(id_product) references product(id),
+        foreign key(id_payment_method) references payment_method(id)
+   );
+
+    create table detail_transaction (
+        id serial,
+        id_transaction int,
+        jumlah int not null,
+        total_harga int not null,
+        tanggal_pembelian timestamp,
+        waktu_transaksi timestamp,
+        foreign key (id_transaction) references transaction(id)
+   );
+
+
 3) Create table kurir dengan field id, name, created_at, updated_at.
 Sulisi SQL:
+
+    create table kurir (
+        id serial,
+        nama text not null,
+        created_at text,
+        updated_at text
+    );
+
 
 4) Tambahkan ongkos_dasar column di tabel kurir.
 Sulisi SQL:
 
+    alter table kurir add column ongkos_dasar int;
+
 5) Rename tabel kurir menjadi shipping.
 Sulisi SQL:
 
+    alter table kurir rename to shipping;
+
 6) Hapus / Drop tabel shipping karena ternyata tidak dibutuhkan.
 Sulisi SQL:
+
+    drop table shipping;
 
 7) Silahkan menambahkan entity baru dengan relation 1-to-1, 1-to-many, many-to-many. Seperti:
     7.a) 1-to-1: payment_method dengan description.
     Sulisi SQL:
 
+    create table product_description (
+        id serial,
+        deskripsi text,
+        spesifikasi text,
+        id_product int,
+        primary key(id),
+        id_payment_method int,
+        foreign key(id_product) references product(id),
+        foreign key(id_payment_method) references payment_method(id)
+    );
+
     7.b) 1-to-many: user dengan alamat.
     Sulisi SQL:
 
+    create table alamat (
+        id serial,
+        alamat var(100),
+        kota var(100),
+        kode_pos int,
+        negara var(100),
+        telepon int,
+        id_user_pelanggan int,
+        primary key(id),
+        foreign key(id_user_pelanggan) references user_pelanggan(id)
+    );
+
     7.c) many-to-many: user dengan payment_method menjadi user_payment_method_detail.
     Sulisi SQL:
+
+    create table user_payment_method_detail (
+        id serial,
+        id_user_pelanggan int,
+        id_payment_method int,
+        status text,
+        catatan text,
+        primary key(id),
+        foreign key(id_user_pelanggan) references user_pelanggan(id),
+        foreign key(id_payment_method) references payment_method(id)
+    );
